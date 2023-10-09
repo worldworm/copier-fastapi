@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  {{ project_name }}:
+    image: {{ repository_username }}/{{ project_name }}:latest
+    build: .
+    container_name: {{ project_name }}
+    restart: unless-stopped
+    {% if use_dotenv -%}
+    env_file: .env
+    {% endif -%}

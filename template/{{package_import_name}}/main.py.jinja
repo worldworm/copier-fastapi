@@ -1,0 +1,31 @@
+"""Main module."""
+from fastapi import FastAPI
+{% if use_versionizer -%}
+from fastapi_versionizer.versionizer import Versionizer
+{% endif %}
+from .api.routers import router
+
+app = FastAPI(
+    title="{{ project_name }}",
+    summary="{{ project_description }}",
+    contact={
+        "name": "SourceCode {{ repository_provider }} repository",
+        "url": "{{ repository_url }}"
+    },
+)
+
+app.include_router(router)
+{% if use_versionizer %}
+app, versions = Versionizer(
+    app=app,
+    prefix_format='/v{major}',
+    semantic_version_format='{major}',
+    latest_prefix='/latest',
+    sort_routes=True
+).versionize()
+{% endif %}
+
+@app.get("/healthcheck", include_in_schema=True)
+async def healthcheck() -> dict[str, str]:
+    """Healthcheck endpoint."""
+    return {"status": "ok"}

@@ -1,0 +1,16 @@
+{
+    "editor.formatOnSave": true,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "editor.insertSpaces": true,
+    "pylint.args": [
+        "--rcfile=.pylintrc"
+    ],
+    "[python]": {
+        "editor.tabSize": 4,
+        "editor.defaultFormatter": "ms-python.autopep8",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        }
+    }
+}

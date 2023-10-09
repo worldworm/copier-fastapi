@@ -1,0 +1,26 @@
+FROM python:3.10-alpine
+
+LABEL maintainer="{{ repository_username }}"
+LABEL description="{{ project_description }}"
+LABEL org.opencontainers.image.authors="{{ repository_username }}"
+LABEL org.opencontainers.image.title="{{ project_name }}"
+LABEL org.opencontainers.image.description="{{ project_description }}"
+LABEL org.opencontainers.image.source="{{ repository_url }}"
+LABEL org.opencontainers.image.licenses="{{ copyright_license }}"
+LABEL org.opencontainers.image.base.name="docker.io/library/python:3.10-alpine"
+
+WORKDIR /app
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+RUN apk update && \
+    rm -rf /var/cache/apk/* && \
+    pip install --no-cache-dir poetry && \
+    poetry config virtualenvs.create false
+
+COPY pyproject.toml poetry.lock /app/
+RUN poetry install --only main --no-dev --no-root --no-interaction --no-ansi
+
+COPY . /app/
+
+CMD ["poetry", "run", "uvicorn", "{{ package_import_name }}.main:app", "--host", "0.0.0.0"]

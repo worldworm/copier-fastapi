@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "{{ package_distribution_name }}"
+version = "0.1.0"
+description = "{{ project_description }}"
+authors = ["{{ repository_username }}"]
+readme = "README.md"
+repository = "{{ repository_url }}"
+homepage = "{{ repository_url }}"
+{{ "" if copyright_license == "None" else 'license = "' ~ copyright_license ~ '"' }}
+keywords = []
+packages = [{include = "{{ package_import_name }}"}]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+fastapi = "^0.103.2"
+uvicorn = {extras = ["standard"], version = "^0.23.2"}
+pydantic = {extras = ["email"], version = "^2.4.2"}
+{% if use_versionizer -%}
+fastapi-versionizer = "^2.1.2"
+{% endif -%}
+{% if use_dotenv -%}
+pydantic-settings = "^2.0.3"
+{% endif %}
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.2.1"
+pytest = "^7.3.1"
+pytest-cov = "^4.0.0"
+pylint = "^2.17.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.autopep8]
+max_line_length = 150
+
+[tool.isort]
+line_length = 150

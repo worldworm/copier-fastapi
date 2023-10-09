@@ -1,0 +1,78 @@
+_subdirectory: template
+_templates_suffix: .jinja
+_answers_file: .copier-answers.poetry-fastapi.yml
+
+_tasks:
+  - "[ -f README.md ] || touch README.md"
+  - "poetry install"
+  - "[ -d .git ] && poetry run pre-commit install --install-hooks || true"
+
+project_name:
+  type: str
+  help: Project name
+
+project_description:
+  type: str
+  help: Project description
+
+repository_provider:
+  type: str
+  help: Repository provider
+  default: GitHub
+  choices:
+  - GitHub
+  - GitLab
+
+repository_host:
+  type: str
+  help: Repository host
+  when: "{{ repository_provider == 'GitLab' }}"
+  default: "{{ 'gitlab.com' if repository_provider == 'GitLab' else 'github.com' }}"
+
+repository_username:
+  type: str
+  help: Repository username
+
+repository_name:
+  type: str
+  help: Repository name
+  default: "{{ project_name|lower|replace('_', '-')|replace(' ', '-') }}"
+
+repository_url:
+  type: str
+  help: Repository URL
+  default: "https://{{ repository_host if repository_provider == 'GitLab' else 'github.com' }}/{{ repository_username }}/{{ repository_name }}"
+
+copyright_license:
+  type: str
+  help: Project license
+  default: MIT
+  choices:
+  - MIT
+  -
+
+use_docker:
+  type: bool
+  help: Use Docker?
+  default: true
+
+
+package_distribution_name:
+  type: str
+  help: Package distribution name (for `pip install NAME`)
+  default: "{{ project_name|lower|replace('_', '-')|replace(' ', '-') }}"
+
+package_import_name:
+  type: str
+  help: Package import name (for `import NAME` in Python code)
+  default: "{{ project_name|lower|replace('-', '_')|replace(' ', '_') }}"
+
+use_dotenv:
+  type: bool
+  help: Use dotenv?
+  default: true
+
+use_versionizer:
+  type: bool
+  help: Use versionizer?
+  default: true

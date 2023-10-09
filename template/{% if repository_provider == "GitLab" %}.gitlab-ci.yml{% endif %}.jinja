@@ -1,0 +1,115 @@
+stages:
+  - test
+  - build
+  - publish
+
+pylint:
+  stage: test
+  image: python:3.10
+  only:
+    changes:
+      - .gitlab-ci.yml
+      - .pylintrc
+      - "**/*.py"
+  # tags:
+  #   - docker
+  script:
+    - pip3 install poetry
+    - poetry config virtualenvs.create false
+    - poetry install --no-root --no-interaction --no-ansi
+    - pylint --rcfile=.pylintrc $(git ls-files '*.py')
+
+pytest:
+  stage: test
+  image: python:${PY_VERSION}
+  parallel:
+    matrix:
+      - PY_VERSION: ["3.11", "3.10", "3.9", "3.8"]
+  only:
+    changes:
+      - .gitlab-ci.yml
+      - pyproject.toml
+      - poetry.lock
+      - "**/*.py"
+  # tags:
+  #   - docker
+  script:
+    - pip3 install poetry
+    - poetry config virtualenvs.create false
+    - poetry install --no-root --no-interaction --no-ansi
+    - pytest --cov={{package_import_name}} --cov-report term --cov-report xml:coverage.xml
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
+{% if use_docker -%}
+variables:
+  DOCKER_REGISTRY_LOGIN: docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY
+  DOCKER_REGISTRY_LOGOUT: docker logout $DOCKER_REGISTRY
+  DOCKER_IMAGE_NAME: $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$CI_PROJECT_NAME
+
+.docker-build: &docker-build
+  - $DOCKER_REGISTRY_LOGIN
+  - docker build --pull --tag $DOCKER_IMAGE_NAME:$CI_COMMIT_SHA .
+  - docker push $DOCKER_IMAGE_NAME:$CI_COMMIT_SHA
+  - $DOCKER_REGISTRY_LOGOUT
+
+.docker-publish: &docker-publish
+  - $DOCKER_REGISTRY_LOGIN
+  - docker pull $DOCKER_IMAGE_NAME:$CI_COMMIT_SHA
+  - docker tag $DOCKER_IMAGE_NAME:$CI_COMMIT_SHA $DOCKER_IMAGE_NAME:$DOCKER_TAG
+  - docker push $DOCKER_IMAGE_NAME:$DOCKER_TAG
+  - $DOCKER_REGISTRY_LOGOUT
+
+build-docker:
+  stage: build
+  image: docker:dind
+  # tags:
+  #   - docker
+  script:
+    - *docker-build
+  except:
+    - tags
+
+publish-docker-edge:
+  stage: publish
+  image: docker:dind
+  variables:
+    GIT_STRATEGY: none
+    DOCKER_TAG: edge
+    # tags:
+  #   - docker
+  script:
+    - *docker-publish
+  only:
+    - main
+
+publish-docker-release:
+  stage: publish
+  image: docker:dind
+  variables:
+    GIT_STRATEGY: none
+    DOCKER_TAG: $CI_COMMIT_TAG
+    # tags:
+  #   - docker
+  script:
+    - *docker-publish
+  only:
+    - tags
+
+publish-docker-latest:
+  stage: publish
+  image: docker:dind
+  variables:
+    GIT_STRATEGY: none
+    DOCKER_TAG: latest
+    # tags:
+  #   - docker
+  script:
+    - *docker-publish
+  only:
+    - tags
+{% endif -%}
