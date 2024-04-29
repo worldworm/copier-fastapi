@@ -14,17 +14,23 @@
 
 
 ## Features
-- Basic [fastapi](https://github.com/tiangolo/fastapi) setup
-- API versioning using [fastapi-versionizer](https://github.com/alexschimpf/fastapi-versionizer)
-- Pre-defined HTTP status code error models
-- [Poetry](https://github.com/python-poetry/poetry) setup with a pre-defined pyproject.toml
-- Continuous integration (CI) pipelines for Github Actions and GitLab CI/CD
-- Docker support with build and publish pipelines
-- Settings management using [pydantic-settings](https://github.com/pydantic/pydantic-settings)
-- [pre-commit](https://github.com/pre-commit/pre-commit) hooks
-- [pylint](https://github.com/pylint-dev/pylint) code linter
-- [pytest](https://github.com/pytest-dev/pytest/) unit tests
-- [VSCode](https://github.com/microsoft/vscode) configuration
+- 🚀 Basic [fastapi](https://github.com/tiangolo/fastapi) setup
+- 📅 API versioning using [fastapi-versionizer](https://github.com/alexschimpf/fastapi-versionizer)
+- 🚦 Pre-defined HTTP status code error models
+- 📦 [Poetry](https://github.com/python-poetry/poetry) setup with a pre-defined pyproject.toml
+- 🔁 Continuous integration (CI) pipelines for Github Actions and GitLab CI/CD
+- 🐳 Docker support with build and publish pipelines
+- ⚙️ Settings management using [pydantic-settings](https://github.com/pydantic/pydantic-settings)
+- 🗄️ Database support with [sqlmodel](https://github.com/tiangolo/sqlmodel) and mysql, postgres or sqlite configuration
+- ▶️ [alembic](https://github.com/sqlalchemy/alembic) database migrations
+- 🏃 [poethepoet](https://github.com/nat-n/poethepoet) task runner
+- 🪝 [pre-commit](https://github.com/pre-commit/pre-commit) hooks
+- 🔍 [pylint](https://github.com/pylint-dev/pylint) code linter
+- 🏁 [mypy](https://github.com/python/mypy) static type checker
+- 🧪 [pytest](https://github.com/pytest-dev/pytest/) unit tests
+- 🛡️ [bandit](https://github.com/PyCQA/bandit) code security check
+- 🎨 [autopep8](https://github.com/hhatto/autopep8) and [pydocstringformatter](https://github.com/DanielNoord/pydocstringformatter) code formatter and styling
+- 🆚 [VSCode](https://github.com/microsoft/vscode) configuration
 
 
 ## Requirements
