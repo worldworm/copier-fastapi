@@ -1,0 +1,8 @@
+{% if use_database -%}
+DB_DRIVER={{ "postgresql+psycopg2" if database_type == "postgres" else "mysql+pymysql" if database_type == "mysql" else "sqlite"  if database_type == "sqlite" }}
+DB_HOST={{ project_name }}-db
+DB_NAME={{ "data/db/" ~ project_name ~ ".sqlite3" if database_type == "sqlite" else project_name }}
+DB_USER={{ "root"  if database_type == "mysql" else "postgres" if database_type == "postgres" else "" }}
+DB_PASSWORD=
+DB_AUTO_MIGRATE=True
+{% endif %}

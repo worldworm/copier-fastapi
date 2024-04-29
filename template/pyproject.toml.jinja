@@ -11,21 +11,40 @@ keywords = []
 packages = [{include = "{{ package_import_name }}"}]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
+python = ">=3.9,<4.0"
 fastapi = "^0.103.2"
 uvicorn = {extras = ["standard"], version = "^0.23.2"}
 pydantic = {extras = ["email"], version = "^2.4.2"}
 {% if use_versionizer -%}
 fastapi-versionizer = "^2.1.2"
 {% endif -%}
+loguru = "^0.7.2"
 {% if use_dotenv -%}
-pydantic-settings = "^2.0.3"
+pydantic-settings = "^2.2.1"
+{% endif -%}
+{% if use_database -%}
+sqlmodel = "^0.0.16"
+{% if use_database_migrations -%}
+alembic = "^1.13.1"
+{% endif -%}
+{% if database_type == "postgres" -%}
+psycopg2-binary = "^2.9.9"
+{% endif -%}
+{% if database_type == "mysql" -%}
+pymysql = "^1.1.0"
+{% endif -%}
 {% endif %}
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^3.2.1"
-pytest = "^7.3.1"
-pytest-cov = "^4.0.0"
-pylint = "^2.17.4"
+pre-commit = "^3.7.0"
+pytest = "^8.1.1"
+pytest-cov = "^5.0.0"
+pylint = "^3.1.0"
+poethepoet = "^0.25.1"
+pydocstringformatter = "^0.7.3"
+bandit = "^1.7.8"
+mypy = "^1.9.0"
+autopep8 = "^2.1.0"
+isort = "^5.13.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -36,3 +55,100 @@ max_line_length = 150
 
 [tool.isort]
 line_length = 150
+
+[tool.pydocstringformatter]
+write = true
+strip-whitespaces = true
+split-summary-body = false
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+exclude = "tests/*"
+
+[tool.poe.poetry_hooks]
+post_install = "pre-commit-install"
+
+[tool.poe.tasks]
+
+    [tool.poe.tasks.run]
+    help = "Start the project"
+    cmd = "python -m {{ package_import_name }}.main"
+
+    [tool.poe.tasks.lint]
+    help = "Lint the project"
+    cmd = "pylint {{ package_import_name }}"
+
+    [tool.poe.tasks.types]
+    help = "Type-check the project"
+    cmd = "mypy ."
+
+    [tool.poe.tasks.format]
+    help = "Format the code"
+    cmd  = "autopep8 --in-place --recursive ."
+
+    [tool.poe.tasks.test]
+    help = "Run unit tests"
+    cmd = "pytest"
+
+    [tool.poe.tasks.cov]
+    help = "Run unit tests with coverage"
+    cmd = "pytest --cov={{ package_import_name }} --cov-report term --cov-report xml:coverage.xml"
+
+    [tool.poe.tasks.clean]
+    help = "Clean up project files"
+    cmd = """
+        rm -rf ./**/*.pyc
+               ./**/__pycache__
+               .mypy_cache
+               .pytest_cache
+               coverage.xml
+               .coverage
+    """
+
+    [tool.poe.tasks.pre-commit-install]
+    help = "Install pre-commit hooks"
+    shell = """
+        if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+            poetry run pre-commit install --install-hooks
+        else
+            echo "Skipping pre-commit install because this is not a git repository!"
+        fi
+    """
+
+    [tool.poe.tasks.pre-commit-run]
+    help = "Run pre-commit checks"
+    cmd = "pre-commit run --all-files"
+
+    [tool.poe.tasks.docstringformatter]
+    help = "Format docstrings"
+    cmd = "pydocstringformatter ."
+
+    [tool.poe.tasks.sort]
+    help = "Sort imports"
+    cmd = "isort ."
+
+    [tool.poe.tasks.bandit]
+    help = "Run security checks"
+    cmd = "bandit -r {{ package_import_name }}"
+
+    [tool.poe.tasks.style]
+    help     = "Run all style formatters on the code base"
+    sequence = ["docstringformatter", "sort", "format"]
+    ignore_fail = "return_non_zero"
+
+    [tool.poe.tasks.check]
+    help     = "Run all checks on the code base"
+    sequence = ["style", "bandit", "types", "lint", "test"]
+    ignore_fail = "return_non_zero"
+{% if use_database_migrations %}
+    [tool.poe.tasks.migrate]
+    help = "Run database migrations"
+    cmd = "alembic upgrade head"
+
+    [tool.poe.tasks.revision]
+    help = "Create a new database revision (--message required)"
+    cmd = "alembic revision --autogenerate --message ${message}"
+    args = [{name = "message", required = true, type = "string"}]
+{% endif %}

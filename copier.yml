@@ -5,7 +5,6 @@ _answers_file: .copier-answers.poetry-fastapi.yml
 _tasks:
   - "[ -f README.md ] || touch README.md"
   - "poetry install"
-  - "[ -d .git ] && poetry run pre-commit install --install-hooks || true"
 
 project_name:
   type: str
@@ -71,6 +70,28 @@ use_dotenv:
   type: bool
   help: Use dotenv?
   default: true
+
+use_database:
+  type: bool
+  help: Use database?
+  default: false
+  when: "{{ use_dotenv }}"
+
+database_type:
+  type: str
+  help: Database type
+  default: mysql
+  when: "{{ use_database }}"
+  choices:
+  - mysql
+  - postgres
+  - sqlite
+
+use_database_migrations:
+  type: bool
+  help: Use database migrations?
+  default: "{{ true if use_database else false }}"
+  when: "{{ use_database }}"
 
 use_versionizer:
   type: bool

@@ -3,6 +3,9 @@ from fastapi import FastAPI
 {% if use_versionizer -%}
 from fastapi_versionizer.versionizer import Versionizer
 {% endif %}
+{% if use_database_migrations -%}
+from . import database
+{% endif %}
 from .api.routers import router
 
 app = FastAPI(
@@ -29,3 +32,14 @@ app, versions = Versionizer(
 async def healthcheck() -> dict[str, str]:
     """Healthcheck endpoint."""
     return {"status": "ok"}
+
+
+def main() -> None:
+    """Main function."""
+
+
+if __name__ == "__main__":
+    {% if use_database_migrations -%}
+    database.apply_migrations()
+    {% endif -%}
+    main()

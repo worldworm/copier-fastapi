@@ -6,11 +6,20 @@
     "pylint.args": [
         "--rcfile=.pylintrc"
     ],
+    "mypy-type-checker.args": [
+        "--config-file=pyproject.toml"
+    ],
+    "autopep8.args": [
+        "--max-line-length=150"
+    ],
+    "isort.args": [
+        "--line-length=150"
+    ],
     "[python]": {
         "editor.tabSize": 4,
         "editor.defaultFormatter": "ms-python.autopep8",
         "editor.codeActionsOnSave": {
-            "source.organizeImports": true
+            "source.organizeImports": "explicit"
         }
     }
 }

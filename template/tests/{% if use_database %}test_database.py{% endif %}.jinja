@@ -1,0 +1,21 @@
+"""Test database."""
+import importlib
+
+from {{package_import_name}} import database
+
+
+def test_database_url(monkeypatch):
+    """Test database url."""
+    monkeypatch.setattr("sqlmodel.create_engine", lambda *args, **kwargs: None)
+    monkeypatch.setattr("{{package_import_name}}.database.settings.DB_DRIVER", "sqlite")
+    monkeypatch.setattr("{{package_import_name}}.database.settings.DB_NAME", "data/db/test.sqlite3")
+    importlib.reload(database)
+    assert str(database.DATABASE_URL) == "sqlite:///data/db/test.sqlite3"
+
+    monkeypatch.setattr("{{package_import_name}}.database.settings.DB_DRIVER", "postgresql+psycopg2")
+    monkeypatch.setattr("{{package_import_name}}.database.settings.DB_NAME", "test")
+    monkeypatch.setattr("{{package_import_name}}.database.settings.DB_USER", "test_user")
+    monkeypatch.setattr("{{package_import_name}}.database.settings.DB_PASSWORD", "test_password")
+    monkeypatch.setattr("{{package_import_name}}.database.settings.DB_HOST", "localhost")
+    importlib.reload(database)
+    assert str(database.DATABASE_URL) == "postgresql+psycopg2://test_user:***@localhost/test"

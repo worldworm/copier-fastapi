@@ -2,9 +2,16 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Config(BaseSettings):
-    """Configuration class loading from dotenv file."""
+class Settings(BaseSettings):
+    """Settings class loading from dotenv file."""
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+{% if use_database %}
+    DB_DRIVER: str
+    DB_HOST: str
+    DB_USER: str
+    DB_PASSWORD: str
+    DB_NAME: str
+    DB_AUTO_MIGRATE: bool = True
+{% endif %}
 
-
-config = Config()
+settings = Settings()

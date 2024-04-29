@@ -23,4 +23,4 @@ RUN poetry install --only main --no-dev --no-root --no-interaction --no-ansi
 
 COPY . /app/
 
-CMD ["poetry", "run", "uvicorn", "{{ package_import_name }}.main:app", "--host", "0.0.0.0"]
+CMD ["poetry", "run", "python", "-m", "{{ package_import_name }}.main"]
