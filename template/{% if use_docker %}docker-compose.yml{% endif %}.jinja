@@ -20,6 +20,8 @@ services:
     build: .
     container_name: {{ project_name }}
     restart: unless-stopped
+    ports:
+      - 8000:8000
     {% if use_dotenv -%}
     env_file: .env
     {% endif -%}

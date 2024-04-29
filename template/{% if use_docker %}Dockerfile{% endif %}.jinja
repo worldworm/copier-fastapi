@@ -23,4 +23,5 @@ RUN poetry install --only main --no-dev --no-root --no-interaction --no-ansi
 
 COPY . /app/
 
+EXPOSE 8000
 CMD ["poetry", "run", "python", "-m", "{{ package_import_name }}.main"]

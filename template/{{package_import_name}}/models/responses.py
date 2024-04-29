@@ -1,4 +1,6 @@
-"""FastAPI response schemas."""
+"""FastAPI response models."""
+from typing import Any
+
 from fastapi import status
 from pydantic import BaseModel, Field
 
@@ -8,7 +10,7 @@ class HTTPError(BaseModel):
     detail: str = Field(examples=["HTTPException raised."])
 
 
-def generate_http_error_response(status_code: int, detail: str):
+def generate_http_error_response(status_code: int, detail: str) -> dict[int, dict[str, Any]]:
     """Generate HTTP error response."""
     return {status_code: {"model": HTTPError, "description": detail,
                           "content": {"application/json": {"example": {"detail": detail}}}}}

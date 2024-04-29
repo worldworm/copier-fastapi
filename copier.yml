@@ -1,6 +1,6 @@
 _subdirectory: template
 _templates_suffix: .jinja
-_answers_file: .copier-answers.poetry-fastapi.yml
+_answers_file: .copier-answers.fastapi.yml
 
 _tasks:
   - "[ -f README.md ] || touch README.md"
