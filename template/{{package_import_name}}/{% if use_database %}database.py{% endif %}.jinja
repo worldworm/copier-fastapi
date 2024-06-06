@@ -1,4 +1,8 @@
 """Database connection and session management."""
+from collections.abc import Generator
+from typing import Annotated
+
+from fastapi import Depends
 from loguru import logger
 from sqlalchemy import URL
 from sqlmodel import Session, SQLModel, create_engine
@@ -23,6 +27,15 @@ if settings.DB_DRIVER != "sqlite":
 DATABASE_URL = URL.create(**db_args)  # type: ignore
 
 engine = create_engine(DATABASE_URL, echo=False)
+
+
+def get_session() -> Generator[Session, None, None]:
+    """Get a database session."""
+    with Session(engine) as session:
+        yield session
+
+
+SessionDep = Annotated[Session, Depends(get_session)]
 
 
 def create_db_and_tables() -> None:  # pragma: no cover

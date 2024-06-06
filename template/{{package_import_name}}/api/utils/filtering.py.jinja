@@ -1,0 +1,50 @@
+"""Module for filtering utilities."""
+from collections import Counter
+from typing import Annotated, Any, Callable, Type
+
+from fastapi import HTTPException, Query
+from pydantic import BaseModel, StringConstraints
+{% if use_database %}from sqlalchemy.sql.elements import BinaryExpression{% endif %}
+
+
+class FilterBy(BaseModel):
+    """Model for filtering criteria."""
+    field: str
+    query: str
+
+    @staticmethod
+    def create(fields: list[str]) -> str:
+        """Create a regex pattern for allowed filtering options."""
+        return "|".join(f"^{field}:.*$" for field in fields)
+
+    @staticmethod
+    def parse(filter_value: str) -> "FilterBy":
+        """Parse a filter value string into a FilterBy object."""
+        parts = filter_value.split(":", 1)
+        field = parts[0]
+        query = parts[1] or ""
+        return FilterBy(field=field, query=query)
+{% if use_database %}
+    def clause(self, model: Type[BaseModel]) -> BinaryExpression[Any]:
+        """Return the SQL WHERE clause."""
+        if "%" in self.query:
+            return getattr(model, self.field).like(self.query)  # type: ignore
+        return getattr(model, self.field) == self.query  # type: ignore
+{% endif %}
+
+def parse_filter(model: Type[BaseModel]) -> Callable[[list[str]], list[FilterBy]]:
+    """Factory function to create a filter parser for the given model."""
+    fields = list(model.model_fields.keys())
+
+    def _parse_filter(filter: list[Annotated[str, StringConstraints(pattern=FilterBy.create(fields))]] =  # pylint: disable=redefined-builtin
+                      Query(None, description=f"Filter by '{{field}}:{{query}}'<br>" \
+                            f"Use '%' for wildcard matching<br>Allowed fields: {fields}")) -> list[FilterBy]:
+        if not isinstance(filter, list):
+            return []
+        resp = [FilterBy.parse(f) for f in filter]
+        counter = Counter([f.field for f in resp])
+        if counter.most_common(1)[0][1] > 1:
+            raise HTTPException(status_code=422, detail="Duplicate query parameters supplied for filter")
+        return resp
+
+    return _parse_filter

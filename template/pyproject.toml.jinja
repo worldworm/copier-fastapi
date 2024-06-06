@@ -12,9 +12,9 @@ packages = [{include = "{{ package_import_name }}"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-fastapi = "^0.110.2"
-uvicorn = {extras = ["standard"], version = "^0.29.0"}
-pydantic = {extras = ["email"], version = "^2.7.1"}
+fastapi = "^0.111.0"
+uvicorn = {extras = ["standard"], version = "^0.30.1"}
+pydantic = {extras = ["email"], version = "^2.7.3"}
 {% if use_versionizer -%}
 fastapi-versionizer = "^4.0.1"
 {% endif -%}
