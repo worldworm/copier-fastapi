@@ -17,6 +17,8 @@
 - 🚀 Basic [fastapi](https://github.com/tiangolo/fastapi) setup
 - 📅 API versioning using [fastapi-versionizer](https://github.com/alexschimpf/fastapi-versionizer)
 - 🚦 Pre-defined HTTP status code error models
+- 🔍 Sorting and filtering query dependencies
+- 📚 Pagination model with built-in page calculation
 - 📦 [Poetry](https://github.com/python-poetry/poetry) setup with a pre-defined pyproject.toml
 - 🔁 Continuous integration (CI) pipelines for Github Actions and GitLab CI/CD
 - 🐳 Docker support with build and publish pipelines
