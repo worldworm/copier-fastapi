@@ -37,7 +37,7 @@ def parse_filter(model: Type[BaseModel]) -> Callable[[list[str]], list[FilterBy]
     fields = list(model.model_fields.keys())
 
     def _parse_filter(filter: list[Annotated[str, StringConstraints(pattern=FilterBy.create(fields))]] =  # pylint: disable=redefined-builtin
-                      Query(None, description=f"Filter by '{{field}}:{{query}}'<br>" \
+                      Query(None, description=f"Filter by '{{ "{{field}}:{{query}}" }}'<br>" \
                             f"Use '%' for wildcard matching<br>Allowed fields: {fields}")) -> list[FilterBy]:
         if not isinstance(filter, list):
             return []

@@ -36,7 +36,7 @@ def parse_sort(model: Type[BaseModel]) -> Callable[[str], SortBy]:
     """Factory function to create a sort parser for the given model."""
     fields = list(model.model_fields.keys())
 
-    def _parse_sort(sort: str = Query(None, description=f"Sort by '{{field}}:asc | desc'<br>Allowed fields: {fields}",
+    def _parse_sort(sort: str = Query(None, description=f"Sort by '{{ "{{field}}" }}:asc | desc'<br>Allowed fields: {fields}",
                                       pattern=SortBy.create(fields))) -> SortBy:
         return SortBy.parse(sort) if sort else SortBy()
 
